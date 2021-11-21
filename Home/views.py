@@ -16,7 +16,7 @@ from Home.serializers import ChampionSerializer
 
 
 # Create your views here.
-API_KEY = '?api_key=RGAPI-a0bf3ce2-71e8-484a-8294-8b461b191bea'
+API_KEY = 'RGAPI-0e5897b4-baa0-45be-9ad5-d3722a753868'
 BASE_URL = 'https://na1.api.riotgames.com'
 
 
@@ -31,7 +31,7 @@ def testSummonerAPI(request):
     
 
     #summoner portion
-    summonerResponse = requests.get(BASE_URL + '/lol/summoner/v4/summoners/by-name/KingSwirly' + API_KEY)
+    summonerResponse = requests.get(BASE_URL + '/lol/summoner/v4/summoners/by-name/KingSwirly' + '?api_key=' + API_KEY)
     summonerInfo = summonerResponse.json()
 
     name = summonerInfo['name']
@@ -50,13 +50,12 @@ def testSummonerAPI(request):
         'summonerLevel': summonerLevel}, 
         safe=False)
 
-API_KEY = '?api_key=RGAPI-a0bf3ce2-71e8-484a-8294-8b461b191bea'
 @csrf_exempt
 def SummonerAPI(request, summonerName):
     
     #Summoners
 
-    summonerResponse = requests.get(BASE_URL + '/lol/summoner/v4/summoners/by-name/'+ summonerName + API_KEY)
+    summonerResponse = requests.get(BASE_URL + '/lol/summoner/v4/summoners/by-name/'+ summonerName + '?api_key=' + API_KEY)
     summonerInfo = summonerResponse.json()
 
     name = summonerInfo['name']
@@ -67,7 +66,7 @@ def SummonerAPI(request, summonerName):
 
 
     #Champions
-    championResponse = requests.get(BASE_URL + '/lol/champion-mastery/v4/champion-masteries/by-summoner/'+ id + API_KEY)
+    championResponse = requests.get(BASE_URL + '/lol/champion-mastery/v4/champion-masteries/by-summoner/'+ id + '?api_key=' + API_KEY)
     championInfo = championResponse.json()
     champion1 = championInfo[1] 
     champion2 = championInfo[2]
