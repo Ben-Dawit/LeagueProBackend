@@ -58,52 +58,38 @@ def SummonerAPI(request, summonerName):
     summonerResponse = requests.get(BASE_URL + '/lol/summoner/v4/summoners/by-name/'+ summonerName + '?api_key=' + API_KEY)
     summonerInfo = summonerResponse.json()
 
-    name = summonerInfo['name']
-    id = summonerInfo['id']
-    summonerLevel = summonerInfo['summonerLevel']
+    sumName = str('name')
+    sumId = summonerInfo['id']
+    sumLevel = summonerInfo['summonerLevel']
 
 
 
 
-    #Champions
-    championResponse = requests.get(BASE_URL + '/lol/champion-mastery/v4/champion-masteries/by-summoner/'+ id + '?api_key=' + API_KEY)
+    # Champions
+    championResponse = requests.get(BASE_URL + '/lol/champion-mastery/v4/champion-masteries/by-summoner/' + sumId + '?api_key=' + API_KEY)
     championInfo = championResponse.json()
-    champion1 = championInfo[1] 
-    champion2 = championInfo[2]
-    champion3 = championInfo[3]
+    champion1 = championInfo[0]
+    champion2 = championInfo[1]
+    champion3 = championInfo[2]
 
-
+    f = open('./resources/champion.json', encoding="utf-8")
+    championDetails = json.loads(f.read())
 
     champion1key = champion1['championId']
     champion2key = champion2['championId']
     champion3key = champion3['championId']
 
-    #querying the database for the champion's name by using the championKey. 
-    #the championKey is the championId obtained from a RIOT API query
-    #the championKey from RIOT API is a Long data type, and needs to be compared with int data types in the database
-    #after that, just extract the corresponding championName. 
-    #On second thought, it looks like i tried to serialize the championKey back into json, when that's not necessary. I just need the name. Look into this next?
-    # champion1keydb = Champion.objects.all().filter(int(champion1key))
-    # champion1json = ChampionSerializer(champion1keydb)
-    # champion2keydb = Champion.objects.all().filter(int(champion2key))
-    # champion2json = ChampionSerializer(champion2keydb)
-    # champion3keydb = Champion.objects.all().filter(int(champion3key))
-    # champion3json = ChampionSerializer(champion3keydb)
+    champion1name = "None"
+    champion2name = "None"
+    champion3name = "None"
 
-
-
-    #THIS IS FOR TRYING TO EXTRACT SHIT FROM THE DATA DRAGON < FAILED METHOD
-    # for key,value in championData.items():
-        
-    #     if(champion1key == championData[value]['key']):
-    #         champion1Name = championData[value]['name']
-    #     if(champion2key == championData[value]['key']):
-    #         champion2Name = championData[value]['name']
-    #     if(champion3key == championData[value]['key']):
-    #         champion3Name = championData[value]['name']
-        
-    
-
+    for champ in championDetails['data']:
+        if championDetails['data'][champ]['key'] == str(champion1key):
+            champion1name = champ
+        if championDetails['data'][champ]['key'] == str(champion2key):
+            champion2name = champ
+        if championDetails['data'][champ]['key'] == str(champion3key):
+            champion3name = champ
 
 
     champion1Level = champion1['championLevel']
@@ -115,10 +101,10 @@ def SummonerAPI(request, summonerName):
     champion3Points = champion3['championPoints']
     
     return JsonResponse({
-        'summonerName': name, 
-        'summonerLevel': summonerLevel,
-        # 'championName' : [ champion1json, champion2json, champion3json ],
-        'championLevel' : [ champion1Level, champion2Level, champion3Level ],
-        'championPoints' : [ champion1Points, champion2Points, champion3Points ]
+        'summonerName': sumName,
+        'summonerLevel': sumLevel,
+        'championName': [champion1name, champion2name, champion3name],
+        'championLevel': [champion1Level, champion2Level, champion3Level],
+        'championPoints': [champion1Points, champion2Points, champion3Points]
         }, 
         safe=False)
